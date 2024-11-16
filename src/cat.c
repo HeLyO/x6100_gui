@@ -344,7 +344,7 @@ static void frame_parse(uint16_t len) {
             break;
 
         case C_CTL_FUNC:
-            if (frame[5] == 0x02) {
+            if (frame[5] == 0x02) { // PRE function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
                     send_frame(8);
@@ -352,16 +352,38 @@ static void frame_parse(uint16_t len) {
                     switch (frame[6]) {
                         case 0:
                             radio_change_pre();
+                            info_params_set();
                             break;
 
                         case 1:
                             radio_change_pre();
+                            info_params_set();
                             break;
                     }
                     frame[6] = CODE_OK;
                     send_frame(8);
                 }
             }
+            if (frame[5] == 0x40) { // NR function
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                    switch (frame[6]) {
+                        case 0:
+                            bool b = radio_change_nr(0);
+                            msg_update_text_fmt("#FFFFFF NR: %s", b ? "On" : "Off");
+                            break;
+
+                        case 1:
+                            bool b = radio_change_nr(1);
+                            msg_update_text_fmt("#FFFFFF NR: %s", b ? "On" : "Off");
+                            break;
+                    }
+                    frame[6] = CODE_OK;
+                    send_frame(8);
+                }
+            }            
             break;
 
         case C_SET_VFO:;
