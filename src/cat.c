@@ -344,7 +344,7 @@ static void frame_parse(uint16_t len) {
             break;
 
         case C_CTL_FUNC:
-            if (frame[5] == 0x00) {
+            if (frame[5] == 0x02) {
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
                     send_frame(8);
