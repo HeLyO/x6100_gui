@@ -128,9 +128,9 @@ static void show_time() {
             }
 
             if (v_ext < 3.0f) {
-                snprintf(str, sizeof(str), "%s %.1fv\n%i%%", bat_sym, v_bat, cap_bat);
+                snprintf(str, sizeof(str), "%s %.1f V\n%i%%", bat_sym, v_bat, cap_bat);
             } else {
-                snprintf(str, sizeof(str), "%s %.1fv\n%s %.1fv", bat_sym, v_bat, ext_sym, v_ext);
+                snprintf(str, sizeof(str), "%s %.1f V\n%s %.1f V", bat_sym, v_bat, ext_sym, v_ext);
             }
 
             pthread_mutex_unlock(&power_mux);
