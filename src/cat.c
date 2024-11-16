@@ -343,6 +343,27 @@ static void frame_parse(uint16_t len) {
             }
             break;
 
+        case C_CTL_FUNC:
+            if (frame[5] == 0x00) {
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                    switch (frame[6]) {
+                        case 0:
+                            radio_change_pre();
+                            break;
+
+                        case 1:
+                            radio_change_pre();
+                            break;
+                    }
+                    frame[6] = CODE_OK;
+                    send_frame(8);
+                }
+            }
+            break;
+
         case C_SET_VFO:;
             x6100_vfo_t new_vfo;
             switch (frame[5]) {
