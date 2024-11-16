@@ -20,6 +20,8 @@
 #include "spectrum.h"
 #include "scheduler.h"
 #include "main_screen.h"
+#include "msg.h" //
+#include "info.h" //
 
 #include <aether_radio/x6100_control/low/gpio.h>
 #include "lvgl/lvgl.h"
@@ -296,7 +298,7 @@ static void frame_parse(uint16_t len) {
             send_frame(11);
             break;
 
-        case C_RD_MODE: ;
+        case C_RD_MODE:
             uint8_t v = x_mode_2_ci_mode(cur_mode);
             frame[5] = v;
             frame[6] = v;
@@ -313,7 +315,7 @@ static void frame_parse(uint16_t len) {
             send_code(CODE_OK);
             break;
 
-        case C_SET_MODE: ;
+        case C_SET_MODE:
             x6100_mode_t new_mode = ci_mode_2_x_mode(frame[5], NULL);
             if (new_mode != cur_mode) {
                 scheduler_put(main_screen_set_mode, &new_mode, sizeof(new_mode));
@@ -323,7 +325,7 @@ static void frame_parse(uint16_t len) {
             break;
 
         case C_CTL_PTT:
-            if (frame[5] == 0x00) {
+            if (frame[5] == 0x00) { // PTT function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
                     send_frame(8);
@@ -332,7 +334,6 @@ static void frame_parse(uint16_t len) {
                         case 0:
                             radio_set_ptt(false);
                             break;
-
                         case 1:
                             radio_set_ptt(true);
                             break;
@@ -341,43 +342,22 @@ static void frame_parse(uint16_t len) {
                     send_frame(8);
                 }
             }
-            break;
-
-        case C_CTL_FUNC:
-            if (frame[5] == 0x02) { // PRE function
+            if (frame[5] == 0x01) { // ATU function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
                     send_frame(8);
                 } else {
                     switch (frame[6]) {
                         case 0:
-                            radio_change_pre();
+                            radio_change_atu();
                             info_params_set();
                             break;
-
                         case 1:
-                            radio_change_pre();
+                            radio_change_atu();
                             info_params_set();
                             break;
-                    }
-                    frame[6] = CODE_OK;
-                    send_frame(8);
-                }
-            }
-            if (frame[5] == 0x40) { // NR function
-                if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
-                    send_frame(8);
-                } else {
-                    switch (frame[6]) {
-                        case 0:
-                            bool b = radio_change_nr(0);
-                            msg_update_text_fmt("#FFFFFF NR: %s", b ? "On" : "Off");
-                            break;
-
-                        case 1:
-                            bool b = radio_change_nr(1);
-                            msg_update_text_fmt("#FFFFFF NR: %s", b ? "On" : "Off");
+                        case 2:
+                            radio_start_atu();
                             break;
                     }
                     frame[6] = CODE_OK;
@@ -386,10 +366,71 @@ static void frame_parse(uint16_t len) {
             }            
             break;
 
-        case C_SET_VFO:;
+        case C_CTL_ATT:
+            if (frame[6] == FRAME_END) { // ATT function
+                frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                send_frame(8);
+            } else {
+                    radio_change_att();
+                    info_params_set();
+                    frame[6] = CODE_OK;
+                    send_frame(8);             
+                }
+            break;
+
+        case C_CTL_FUNC:
+            if (frame[5] == 0x02) { // PRE function
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                        radio_change_pre();
+                        info_params_set();
+                        frame[6] = CODE_OK;
+                        send_frame(8);
+                    }
+            }
+            if (frame[5] == 0x12) { // AGC function
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                        radio_change_agc();
+                        info_params_set();
+                        frame[6] = CODE_OK;
+                        send_frame(8);
+                    }
+            }            
+            if (frame[5] == 0x40) { // NR function
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                    bool b;
+                    b = radio_change_nr(1);
+                    msg_update_text_fmt("#FFFFFF NR: %s", b ? "On" : "Off");
+                    frame[6] = CODE_OK;
+                    send_frame(8);
+                }
+            }
+            if (frame[5] == 0x22) { // NB function
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    send_frame(8);
+                } else {
+                    bool b;
+                    b = radio_change_nb(1);
+                    msg_update_text_fmt("#FFFFFF NB: %s", b ? "On" : "Off");
+                    frame[6] = CODE_OK;
+                    send_frame(8);
+                }
+            }                     
+            break;
+
+        case C_SET_VFO:
             x6100_vfo_t new_vfo;
             switch (frame[5]) {
-            case S_VFOA:
+            case S_VFOB: //////////////////////////
                 if (cur_vfo != X6100_VFO_A) {
                     new_vfo = X6100_VFO_A;
                     scheduler_put(set_vfo, &new_vfo, sizeof(new_vfo));
@@ -398,7 +439,7 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_OK);
                 break;
 
-            case S_VFOB:
+            case S_VFOA: //////////////////////////
                 if (cur_vfo != X6100_VFO_B) {
                     new_vfo = X6100_VFO_A;
                     scheduler_put(set_vfo, &new_vfo, sizeof(new_vfo));
@@ -434,7 +475,7 @@ static void frame_parse(uint16_t len) {
             }
             break;
 
-        case C_SEND_SEL_MODE: ;
+        case C_SEND_SEL_MODE:
             if (frame[5]) {
                 target_vfo = (cur_vfo == X6100_VFO_A) ? X6100_VFO_B : X6100_VFO_A;
             }
