@@ -351,6 +351,22 @@ static void frame_parse(uint16_t len) {
             send_code(CODE_OK);
             break;
         }
+        case C_CTL_LVL: {
+            if (frame[5] == 0x01) { // AF level
+                if (frame[6] == FRAME_END) {
+                    uint16_t vol = radio_change_vol(0);
+                    frame[6] = static_cast<uint8_t>((value & 0xFF00) >> 8);
+                    frame[7] = static_cast<uint8_t>(value & 0x00FF);
+                    send_frame(9);
+                } else {
+                        int16_t vol = static_cast<unsigned>(frame[6]) << 8 | static_cast<unsigned>(frame[7]);
+                        int32_t x = radio_change_vol(vol * 55 / 255);
+                        frame[6] = CODE_OK;
+                        send_frame(8);
+                }
+            }
+            break;
+        }        
         case C_CTL_PTT: {
             if (frame[5] == 0x00) { // PTT function
                 if (frame[6] == FRAME_END) {
@@ -449,18 +465,17 @@ static void frame_parse(uint16_t len) {
                     send_frame(8);
                 }
             }
-            if (frame[5] == 0x02) { // DNF state
+            if (frame[5] == 0x41) { // DNF function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_change_dnf(0) == 0) ? 0 : 1;
                     send_frame(8);
-                }
-            }
-            if (frame[5] == 0x41) { // DNF function
+                } else {
                 bool b;
                 b = radio_change_dnf(1);
                 msg_update_text_fmt("#FFFFFF DNF: %s", b ? "On" : "Off");
                 frame[6] = CODE_OK;
-                send_frame(8);              
+                send_frame(8);
+                }             
             }                                 
             break;
         }
