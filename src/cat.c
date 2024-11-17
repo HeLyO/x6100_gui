@@ -354,15 +354,15 @@ static void frame_parse(uint16_t len) {
         case C_CTL_LVL: {
             if (frame[5] == 0x01) { // AF level
                 if (frame[6] == FRAME_END) {
-                    uint16_t vol = radio_change_vol(0);
+                    uint16_t vol = radio_change_vol(0) * 255 / 55;
                     frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
                     frame[7] = (uint8_t)(vol & 0x00FF);
                     send_frame(9);
                 } else {
-                        int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
-                        int32_t x = radio_change_vol(vol * 55 / 255);
-                        frame[6] = CODE_OK;
-                        send_frame(8);
+                        // int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
+                        // int32_t x = radio_change_vol(vol * 55 / 255);
+                        // frame[6] = CODE_OK;
+                        // send_frame(8);
                 }
             }
             break;
@@ -538,9 +538,13 @@ static void frame_parse(uint16_t len) {
         case C_CTL_SPLT: {
             if (frame[5] == FRAME_END) { // SPLT function
                 frame[5] = (params_band_split_get() == 0) ? 0 : 1;
-                send_frame(8);
+                send_frame(7);
             } else {
                     radio_toggle_split();
+                    info_params_set();
+                    waterfall_set_freq(params_band_cur_freq_get());
+                    spectrum_clear();
+                    main_screen_band_set();                    
                     frame[5] = CODE_OK;
                     send_frame(8);             
                     }
