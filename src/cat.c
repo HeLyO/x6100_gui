@@ -293,38 +293,36 @@ static void frame_parse(uint16_t len) {
     prepare_answer();
 
     switch (frame[4]) {
-        case C_RD_FREQ:
+        case C_RD_FREQ: {
             to_bcd(&frame[5], cur_freq, 10);
             send_frame(11);
             break;
-
-        case C_RD_MODE:
+        }
+        case C_RD_MODE: {
             uint8_t v = x_mode_2_ci_mode(cur_mode);
             frame[5] = v;
             frame[6] = v;
             send_frame(8);
             break;
-
-        case C_SET_FREQ:
+        }
+        case C_SET_FREQ: {
             new_freq = from_bcd(&frame[5], 10);
             if (new_freq != cur_freq)
             {
                 scheduler_put(set_freq, &new_freq, sizeof(new_freq));
             }
-
             send_code(CODE_OK);
             break;
-
-        case C_SET_MODE:
+        }
+        case C_SET_MODE: {
             x6100_mode_t new_mode = ci_mode_2_x_mode(frame[5], NULL);
             if (new_mode != cur_mode) {
                 scheduler_put(main_screen_set_mode, &new_mode, sizeof(new_mode));
             }
-
             send_code(CODE_OK);
             break;
-
-        case C_CTL_PTT:
+        }
+        case C_CTL_PTT: {
             if (frame[5] == 0x00) { // PTT function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
@@ -365,20 +363,29 @@ static void frame_parse(uint16_t len) {
                 }
             }            
             break;
-
-        case C_CTL_ATT:
-            if (frame[6] == FRAME_END) { // ATT function
-                frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+        }
+        case C_CTL_ATT: {
+            if (frame[5] == FRAME_END) { // ATT function
+                frame[5] = (radio_get_state() == RADIO_RX) ? 0 : 1;
                 send_frame(8);
             } else {
-                    radio_change_att();
-                    info_params_set();
-                    frame[6] = CODE_OK;
+                    switch (frame[5]) {
+                        msg_update_text_fmt("#FFFFFF ATT: %s", frame[5].tostring());
+                        case 0:
+                            radio_change_att();
+                            info_params_set();
+                            break;
+                        case 1:
+                            radio_change_att();
+                            info_params_set();
+                            break;
+                    }
+                    frame[5] = CODE_OK;
                     send_frame(8);             
                 }
             break;
-
-        case C_CTL_FUNC:
+        }
+        case C_CTL_FUNC: {
             if (frame[5] == 0x02) { // PRE function
                 if (frame[6] == FRAME_END) {
                     frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
@@ -426,35 +433,43 @@ static void frame_parse(uint16_t len) {
                 }
             }                     
             break;
-
-        case C_SET_VFO:
+        }
+        case C_SET_VFO: {
             x6100_vfo_t new_vfo;
             switch (frame[5]) {
-            case S_VFOB: //////////////////////////
+            case S_VFOA: {              
                 if (cur_vfo != X6100_VFO_A) {
                     new_vfo = X6100_VFO_A;
                     scheduler_put(set_vfo, &new_vfo, sizeof(new_vfo));
                 }
-
                 send_code(CODE_OK);
                 break;
-
-            case S_VFOA: //////////////////////////
+            }
+            case S_VFOB: {
                 if (cur_vfo != X6100_VFO_B) {
-                    new_vfo = X6100_VFO_A;
+                    new_vfo = X6100_VFO_B;
                     scheduler_put(set_vfo, &new_vfo, sizeof(new_vfo));
                 }
                 send_code(CODE_OK);
                 break;
-
+            }
+            case 0xB0: { //////////////////////////////////
+                radio_toggle_vfo();
+                info_params_set();
+                waterfall_set_freq(params_band_cur_freq_get());
+                spectrum_clear();
+                main_screen_band_set();
+                send_code(CODE_OK);
+                break;
+            }
             default:
                 LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
                 send_code(CODE_NG);
                 break;
             }
             break;
-
-        case C_SEND_SEL_FREQ:
+        }
+        case C_SEND_SEL_FREQ: {
             if (frame[5]) {
                 target_vfo = (cur_vfo == X6100_VFO_A) ? X6100_VFO_B : X6100_VFO_A;
             }
@@ -474,8 +489,8 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_OK);
             }
             break;
-
-        case C_SEND_SEL_MODE:
+        }
+        case C_SEND_SEL_MODE: {
             if (frame[5]) {
                 target_vfo = (cur_vfo == X6100_VFO_A) ? X6100_VFO_B : X6100_VFO_A;
             }
@@ -492,8 +507,8 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_OK);
             }
             break;
-
-        case C_CTL_MEM:
+        }
+        case C_CTL_MEM: {
             // TODO: Implement another options
             if (frame[6] == FRAME_END) {
                 switch (frame[5])
@@ -513,14 +528,14 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_NG);
             }
             break;
-
-        case C_RD_TRXID:
+        }
+        case C_RD_TRXID: {
             if (frame[5] == 0) {
                 frame[6] = 0xa4;
                 send_frame(8);
             }
             break;
-
+        }
         default:
             LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
             send_code(CODE_NG);
