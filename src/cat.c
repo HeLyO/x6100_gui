@@ -264,10 +264,10 @@ static uint8_t get_agc_mode() {
     case x6100_agc_fast:
         return AGC_FAST;
         break;
-    case  x6100_agc_slow:
+    case x6100_agc_slow:
         return AGC_SLOW;
         break;
-    case  x6100_agc_auto:
+    case x6100_agc_auto:
         return AGC_AUTO;
         break;
     default:
@@ -392,7 +392,7 @@ static void frame_parse(uint16_t len) {
         }
         case C_CTL_ATT: {
             if (frame[5] == FRAME_END) { // ATT function
-                frame[5] = (radio_change_att(0) == 0) ? 0 : 1;
+                frame[5] = (params_band_cur_att_get() == 0) ? 0 : 1;
                 send_frame(8);
             } else {
                     radio_change_att();
@@ -405,7 +405,7 @@ static void frame_parse(uint16_t len) {
         case C_CTL_FUNC: {
             if (frame[5] == 0x02) { // PRE function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_change_pre(0) == 0) ? 0 : 1;
+                    frame[6] = (params_band_cur_pre_get() == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                         radio_change_pre();
