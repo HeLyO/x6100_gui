@@ -370,7 +370,6 @@ static void frame_parse(uint16_t len) {
                 send_frame(8);
             } else {
                     switch (frame[5]) {
-                        msg_update_text_fmt("#FFFFFF ATT: %s", frame[5].tostring());
                         case 0:
                             radio_change_att();
                             info_params_set();
