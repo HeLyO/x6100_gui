@@ -393,7 +393,7 @@ static void frame_parse(uint16_t len) {
         case C_CTL_ATT: {
             if (frame[5] == FRAME_END) { // ATT function
                 frame[5] = (params_band_cur_att_get() == 0) ? 0 : 1;
-                send_frame(8);
+                send_frame(7);
             } else {
                     radio_change_att();
                     info_params_set();
@@ -448,7 +448,20 @@ static void frame_parse(uint16_t len) {
                     frame[6] = CODE_OK;
                     send_frame(8);
                 }
-            }                     
+            }
+            if (frame[5] == 0x02) { // DNF state
+                if (frame[6] == FRAME_END) {
+                    frame[6] = (radio_change_dnf(0) == 0) ? 0 : 1;
+                    send_frame(8);
+                }
+            }
+            if (frame[5] == 0x41) { // DNF function
+                bool b;
+                b = radio_change_dnf(1);
+                msg_update_text_fmt("#FFFFFF DNF: %s", b ? "On" : "Off");
+                frame[6] = CODE_OK;
+                send_frame(8);              
+            }                                 
             break;
         }
         case C_SET_VFO: {
@@ -470,7 +483,7 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_OK);
                 break;
             }
-            case S_XCHNG: {
+            case S_XCHNG: { // Switch VFO A and B
                 radio_toggle_vfo();
                 info_params_set();
                 waterfall_set_freq(params_band_cur_freq_get());
@@ -505,6 +518,17 @@ static void frame_parse(uint16_t len) {
                 }
                 send_code(CODE_OK);
             }
+            break;
+        }
+        case C_CTL_SPLT: {
+            if (frame[5] == FRAME_END) { // SPLT function
+                frame[5] = (params_band_split_get() == 0) ? 0 : 1;
+                send_frame(8);
+            } else {
+                    radio_toggle_split();
+                    frame[5] = CODE_OK;
+                    send_frame(8);             
+                    }
             break;
         }
         case C_SEND_SEL_MODE: {
