@@ -355,8 +355,8 @@ static void frame_parse(uint16_t len) {
             if (frame[5] == 0x01) { // AF level
                 if (frame[6] == FRAME_END) {
                     uint16_t vol = radio_change_vol(0);
-                    frame[6] = (uint8_t)((value & 0xFF00) >> 8);
-                    frame[7] = (uint8_t)(value & 0x00FF);
+                    frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
+                    frame[7] = (uint8_t)(vol & 0x00FF);
                     send_frame(9);
                 } else {
                         int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
