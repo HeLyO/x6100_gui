@@ -108,6 +108,13 @@
 #define MEM_IF_FW       0x03    /* Get IF filter width */
 #define MEM_DM_FG       0x06    /* Get data mode switch and filter group */
 
+// AGC modes
+#define AGC_OFF         0x00
+#define AGC_FAST        0x01
+#define AGC_SLOW        0x02
+#define AGC_AUTO        0x03
+
+
 static int      fd;
 
 static uint8_t  frame[256];
@@ -246,6 +253,28 @@ static uint8_t x_mode_2_ci_mode(x6100_mode_t mode) {
     }
 }
 
+static uint8_t get_agc_mode() {
+    x6100_agc_t     agc = params_band_cur_agc_get();
+
+    switch (agc)
+    {
+    case x6100_agc_off:
+        return AGC_OFF;
+        break;
+    case x6100_agc_fast:
+        return AGC_FAST;
+        break;
+    case  x6100_agc_slow:
+        return AGC_SLOW;
+        break;
+    case  x6100_agc_auto:
+        return AGC_AUTO;
+        break;
+    default:
+        return 0;
+        break;
+    }
+}
 
 static uint8_t get_if_bandwidth() {
     uint32_t bw = params_current_mode_filter_bw_get();
@@ -342,14 +371,11 @@ static void frame_parse(uint16_t len) {
             }
             if (frame[5] == 0x01) { // ATU function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    frame[6] = (radio_change_atu(0) == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                     switch (frame[6]) {
                         case 0:
-                            radio_change_atu();
-                            info_params_set();
-                            break;
                         case 1:
                             radio_change_atu();
                             info_params_set();
@@ -366,28 +392,20 @@ static void frame_parse(uint16_t len) {
         }
         case C_CTL_ATT: {
             if (frame[5] == FRAME_END) { // ATT function
-                frame[5] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                frame[5] = (radio_change_att(0) == 0) ? 0 : 1;
                 send_frame(8);
             } else {
-                    switch (frame[5]) {
-                        case 0:
-                            radio_change_att();
-                            info_params_set();
-                            break;
-                        case 1:
-                            radio_change_att();
-                            info_params_set();
-                            break;
-                    }
+                    radio_change_att();
+                    info_params_set();
                     frame[5] = CODE_OK;
                     send_frame(8);             
-                }
+                    }
             break;
         }
         case C_CTL_FUNC: {
             if (frame[5] == 0x02) { // PRE function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    frame[6] = (radio_change_pre(0) == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                         radio_change_pre();
@@ -398,7 +416,7 @@ static void frame_parse(uint16_t len) {
             }
             if (frame[5] == 0x12) { // AGC function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    frame[6] = get_agc_mode();
                     send_frame(8);
                 } else {
                         radio_change_agc();
@@ -409,7 +427,7 @@ static void frame_parse(uint16_t len) {
             }            
             if (frame[5] == 0x40) { // NR function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    frame[6] = (radio_change_nr(0) == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                     bool b;
@@ -421,7 +439,7 @@ static void frame_parse(uint16_t len) {
             }
             if (frame[5] == 0x22) { // NB function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_get_state() == RADIO_RX) ? 0 : 1;
+                    frame[6] = (radio_change_nb(0) == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                     bool b;
@@ -452,7 +470,7 @@ static void frame_parse(uint16_t len) {
                 send_code(CODE_OK);
                 break;
             }
-            case 0xB0: { //////////////////////////////////
+            case S_XCHNG: {
                 radio_toggle_vfo();
                 info_params_set();
                 waterfall_set_freq(params_band_cur_freq_get());
