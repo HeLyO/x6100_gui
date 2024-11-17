@@ -371,7 +371,7 @@ static void frame_parse(uint16_t len) {
             }
             if (frame[5] == 0x01) { // ATU function
                 if (frame[6] == FRAME_END) {
-                    frame[6] = (radio_change_atu(0) == 0) ? 0 : 1;
+                    frame[6] = (params.atu == 0) ? 0 : 1;
                     send_frame(8);
                 } else {
                     switch (frame[6]) {
