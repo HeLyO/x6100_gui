@@ -356,7 +356,7 @@ static void frame_parse(uint16_t len) {
                 if (frame[6] == FRAME_END) {
                     //uint16_t vol = radio_change_vol(0) * 255 / 55;
                     uint64_t vol = (uint64_t)(radio_change_vol(0) * 255 / 55);
-                    to_bcd(&frame [6], vol, 4)
+                    to_bcd(&frame [6], vol, 4);
                     //frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
                     //frame[7] = (uint8_t)(vol & 0x00FF);
                     send_frame(9);
