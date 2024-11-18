@@ -352,17 +352,20 @@ static void frame_parse(uint16_t len) {
             break;
         }
         case C_CTL_LVL: {
-            if (frame[5] == 0x01) { // AF level
+            if (frame[5] == 0x01) { // VOL level
                 if (frame[6] == FRAME_END) {
-                    uint16_t vol = radio_change_vol(0) * 255 / 55;
-                    frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
-                    frame[7] = (uint8_t)(vol & 0x00FF);
+                    //uint16_t vol = radio_change_vol(0) * 255 / 55;
+                    uint64_t vol = (uint64_t)(radio_change_vol(0) * 255 / 55);
+                    to_bcd(&frame [6], vol, 4)
+                    //frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
+                    //frame[7] = (uint8_t)(vol & 0x00FF);
                     send_frame(9);
                 } else {
-                        // int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
-                        // int32_t x = radio_change_vol(vol * 55 / 255);
-                        // frame[6] = CODE_OK;
-                        // send_frame(8);
+                    uint64_t vol = from_bcd(&frame[6], 4);
+                    // int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
+                    uint16_t x = radio_change_vol((int16_t)(vol * 55 / 255));
+                    frame[6] = CODE_OK;
+                    send_frame(8);
                 }
             }
             break;
@@ -544,7 +547,10 @@ static void frame_parse(uint16_t len) {
                     info_params_set();
                     waterfall_set_freq(params_band_cur_freq_get());
                     spectrum_clear();
-                    main_screen_band_set();                    
+                    main_screen_band_set();
+                    if (params.mag_info.x) {
+                        msg_tiny_set_text_fmt("%s", info_params_vfo());
+                    }                                       
                     frame[5] = CODE_OK;
                     send_frame(8);             
                     }
