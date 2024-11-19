@@ -354,16 +354,13 @@ static void frame_parse(uint16_t len) {
         case C_CTL_LVL: {
             if (frame[5] == 0x01) { // VOL level
                 if (frame[6] == FRAME_END) {
-                    //uint16_t vol = radio_change_vol(0) * 255 / 55;
-                    uint64_t vol = (uint64_t)(radio_change_vol(0) * 255 / 55);
-                    to_bcd(&frame [6], vol, 4);
-                    //frame[6] = (uint8_t)((vol & 0xFF00) >> 8);
-                    //frame[7] = (uint8_t)(vol & 0x00FF);
+                    uint16_t vol = radio_change_vol(0) * 255 / 55;
+                    decimalToBCD(&frame[6], vol, 4);
                     send_frame(9);
                 } else {
-                    uint64_t vol = from_bcd(&frame[6], 4);
-                    // int16_t vol = (unsigned)(frame[6]) << 8 | (unsigned)(frame[7]);
-                    uint16_t x = radio_change_vol((int16_t)(vol * 55 / 255));
+                    uint64_t vol = bcdToDecimal(&frame[6], 4);
+                    vol = ceil_uint64(vol * 55, 255);
+                    uint16_t x = radio_change_vol((int16_t)(vol));
                     frame[6] = CODE_OK;
                     send_frame(8);
                 }

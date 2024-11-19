@@ -25,7 +25,10 @@ void lpf(float *x, float current, float beta, float initial);
 void lpf_block(float *x, float *current, float beta, unsigned int count);
 
 void to_bcd(uint8_t bcd_data[], uint64_t data, uint8_t len);
+void decimalToBCD(uint8_t bcd_data[], uint16_t data, uint8_t len);
 uint64_t from_bcd(const uint8_t bcd_data[], uint8_t len);
+uint64_t bcdToDecimal(const uint8_t bcd_data[], uint8_t len);
+uint64_t ceil_uint64(uint64_t numerator, uint64_t denominator);
 int loop_modes(int16_t dir, int mode, uint64_t modes, const int max_val);
 int sign(int x);
 

@@ -105,6 +105,23 @@ void to_bcd(uint8_t bcd_data[], uint64_t data, uint8_t len) {
     }
 }
 
+void decimalToBCD(uint8_t bcd_data[], uint16_t data, uint8_t len) {
+    uint8_t i;
+
+    for (i = 0; i < len / 2; i++) {
+        uint8_t a = (data / 10) % 10;
+        a <<= 4;
+        a |= data % 10;
+        bcd_data[len / 2 - 1 - i] = a;
+        data /= 100;
+    }
+
+    if (len & 1) {
+        bcd_data[0] &= 0xF0;
+        bcd_data[0] |= data % 10;
+    }
+}
+
 uint64_t from_bcd(const uint8_t bcd_data[], uint8_t len) {
     int16_t     i;
     uint64_t    data = 0;
@@ -123,6 +140,27 @@ uint64_t from_bcd(const uint8_t bcd_data[], uint8_t len) {
     return data;
 }
 
+uint64_t bcdToDecimal(const uint8_t bcd_data[], uint8_t len) {
+    int16_t     i;
+    uint64_t    data = 0;
+
+    if (len & 1) {
+        data = bcd_data[len / 2] & 0x0F;
+    }
+
+    for (i = 0; i <= (len / 2) - 1; i++) {
+        data *= 10;
+        data += bcd_data[i] >> 4;
+        data *= 10;
+        data += bcd_data[i] & 0x0F;
+    }
+
+    return data;
+}
+
+uint64_t ceil_uint64(uint64_t numerator, uint64_t denominator) {
+    return (numerator + denominator - 1) / denominator;
+}
 
 int loop_modes(int16_t dir, int mode, uint64_t modes, int max_val) {
     while (1) {
