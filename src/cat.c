@@ -359,7 +359,7 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t vol = bcdToDecimal(&frame[6], 4);
-                    vol = ceil_uint64(vol * 55, 255);
+                    vol = ceil_uint64(vol * 55, 255) - params.vol;
                     uint16_t x = radio_change_vol((int16_t)(vol));
                     frame[6] = CODE_OK;
                     send_frame(8);
