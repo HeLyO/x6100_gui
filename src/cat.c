@@ -364,6 +364,7 @@ static void frame_parse(uint16_t len) {
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }
+            }
             if (frame[5] == 0x02) { // RF level
                 if (frame[6] == FRAME_END) {
                     uint16_t rf_lvl = radio_change_rfg(0) * 255 / 100;
@@ -371,7 +372,7 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t rf_lvl = bcdToDecimal(&frame[6], 4);
-                    rf_lvl = ceil_uint64(rf_lvl * 100, 255) - rfg;
+                    rf_lvl = ceil_uint64(rf_lvl * 100, 255) - params_band_rfg_get();
                     uint16_t x = radio_change_rfg((int16_t)(rf_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
@@ -398,10 +399,11 @@ static void frame_parse(uint16_t len) {
                 } else {
                     uint64_t nr_lvl = bcdToDecimal(&frame[6], 4);
                     nr_lvl = ceil_uint64(nr_lvl * 60, 255) - params.nr_level;
-                    uint16_t x = radio_chradio_change_nr_level((int16_t)(nr_lvl));
+                    uint16_t x = radio_change_nr_level((int16_t)(nr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }
+            }
             if (frame[5] == 0x12) { // NB level
                 if (frame[6] == FRAME_END) {
                     uint16_t nb_lvl = radio_change_nb_level(0) * 255 / 100;
