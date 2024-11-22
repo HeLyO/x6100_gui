@@ -412,7 +412,7 @@ static void frame_parse(uint16_t len) {
                 } else {
                     uint64_t nb_lvl = bcdToDecimal(&frame[6], 4);
                     nb_lvl = ceil_uint64(nb_lvl * 100, 255) - params.nb_level;
-                    uint16_t x = radio_chradio_change_nb_level((int16_t)(nb_lvl));
+                    uint16_t x = radio_change_nb_level((int16_t)(nb_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }                               
