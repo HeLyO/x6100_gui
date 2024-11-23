@@ -305,7 +305,7 @@ static uint8_t get_if_bandwidth() {
 static void handle_level_change(uint8_t level_id, uint16_t min_value, uint16_t max_value, uint16_t (*radio_change_func)(int16_t), uint16_t *param, uint8_t *frame) {
     if (frame[6] == FRAME_END) {
         //uint16_t level = radio_change_func(0) * 255 / max_value;
-        uint16_t level = (radio_change_func(0) - min_value) / ( max_value - min_value) * 255;
+        uint16_t level = (radio_change_func(0) - min_value) * 255 / ( max_value - min_value);
         decimalToBCD(&frame[6], level, 4);
         send_frame(9);
     } else {
