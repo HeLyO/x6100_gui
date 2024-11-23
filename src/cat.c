@@ -310,8 +310,7 @@ static void handle_level_change(uint8_t level_id, uint16_t min_value, uint16_t m
         send_frame(9);
     } else {
         uint64_t level = bcdToDecimal(&frame[6], 4);
-        //level = ceil_uint64(level * max_value, 255) - *param;
-        level = min_value + ceil_uint64(level * max_value, 255) - *param;
+        level = ceil_uint64(level * max_value, 255) - *param;
         uint16_t x = radio_change_func((int16_t)level);
         frame[4] = CODE_OK;
         send_frame(6);
@@ -482,7 +481,7 @@ static void frame_parse(uint16_t len) {
                     handle_level_change(0x12, 0, 100, radio_change_nb_level, &params.nb_level, frame);
                     break;
                 case 0x0A: // TX Power level
-                    handle_level_change(0x0A, 1, 10, radio_change_pwr, &params.pwr, frame);
+                    handle_level_change(0x0A, 0.1, 10, radio_change_pwr, &params.pwr, frame);
                     break;
                 case 0x0D: // DNF level
                     handle_level_change(0x0D, 100, 3000, radio_change_dnf_center, &params.dnf_center, frame);
