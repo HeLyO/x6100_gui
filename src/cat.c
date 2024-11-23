@@ -465,9 +465,11 @@ static void frame_parse(uint16_t len) {
                     handle_level_change(0x01, 55, radio_change_vol, &params.vol, frame);
                     break;
                 case 0x02: // RF level
+                {
                     uint16_t rfg = params_band_rfg_get();
                     handle_level_change(0x02, 100, radio_change_rfg, &rfg, frame);
                     break;
+                }
                 case 0x03: // SQL level
                     handle_level_change(0x03, 100, radio_change_sql, &params.sql, frame);
                     break;
