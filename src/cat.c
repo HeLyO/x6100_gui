@@ -302,14 +302,16 @@ static uint8_t get_if_bandwidth() {
     }
 }
 
-static void handle_level_change(uint8_t level_id, uint16_t max_value, uint16_t (*radio_change_func)(int16_t), uint16_t *param, uint8_t *frame) {
+static void handle_level_change(uint8_t level_id, uint16_t min_value, uint16_t max_value, uint16_t (*radio_change_func)(int16_t), uint16_t *param, uint8_t *frame) {
     if (frame[6] == FRAME_END) {
-        uint16_t level = radio_change_func(0) * 255 / max_value;
+        //uint16_t level = radio_change_func(0) * 255 / max_value;
+        uint16_t level = (radio_change_func(0) - min_value) / ( max_value - min_value) * 255;
         decimalToBCD(&frame[6], level, 4);
         send_frame(9);
     } else {
         uint64_t level = bcdToDecimal(&frame[6], 4);
-        level = ceil_uint64(level * max_value, 255) - *param;
+        //level = ceil_uint64(level * max_value, 255) - *param;
+        level = min_value + ceil_uint64(level * max_value, 255) - *param;
         uint16_t x = radio_change_func((int16_t)level);
         frame[4] = CODE_OK;
         send_frame(6);
@@ -462,28 +464,28 @@ static void frame_parse(uint16_t len) {
         case C_CTL_LVL: {
             switch (frame[5]) {
                 case 0x01: // AF level
-                    handle_level_change(0x01, 55, radio_change_vol, &params.vol, frame);
+                    handle_level_change(0x01, 0, 55, radio_change_vol, &params.vol, frame);
                     break;
                 case 0x02: // RF level
                 {
                     uint16_t rfg = params_band_rfg_get();
-                    handle_level_change(0x02, 100, radio_change_rfg, &rfg, frame);
+                    handle_level_change(0x02, 0, 100, radio_change_rfg, &rfg, frame);
                     break;
                 }
                 case 0x03: // SQL level
-                    handle_level_change(0x03, 100, radio_change_sql, &params.sql, frame);
+                    handle_level_change(0x03, 0, 100, radio_change_sql, &params.sql, frame);
                     break;
                 case 0x06: // NR level
-                    handle_level_change(0x06, 60, radio_change_nr_level, &params.nr_level, frame);
+                    handle_level_change(0x06, 0, 60, radio_change_nr_level, &params.nr_level, frame);
                     break;
                 case 0x12: // NB level
-                    handle_level_change(0x12, 100, radio_change_nb_level, &params.nb_level, frame);
+                    handle_level_change(0x12, 0, 100, radio_change_nb_level, &params.nb_level, frame);
                     break;
                 case 0x0A: // TX Power level
-                    handle_level_change(0x0A, 10, radio_change_pwr, &params.pwr, frame);
+                    handle_level_change(0x0A, 1, 10, radio_change_pwr, &params.pwr, frame);
                     break;
                 case 0x0D: // DNF level
-                    handle_level_change(0x0D, 3000, radio_change_dnf_center, &params.dnf_center, frame);
+                    handle_level_change(0x0D, 100, 3000, radio_change_dnf_center, &params.dnf_center, frame);
                     break;
             }
             break;
