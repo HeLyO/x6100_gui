@@ -366,129 +366,129 @@ static void frame_parse(uint16_t len) {
             send_code(CODE_OK);
             break;
         }
-        // case C_CTL_LVL: {
-        //     if (frame[5] == 0x01) { // AF level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t af_lvl = radio_change_vol(0) * 255 / 55;
-        //             decimalToBCD(&frame[6], af_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t af_lvl = bcdToDecimal(&frame[6], 4);
-        //             af_lvl = ceil_uint64(af_lvl * 55, 255) - params.vol;
-        //             uint16_t x = radio_change_vol((int16_t)(af_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }
-        //     }
-        //     if (frame[5] == 0x02) { // RF level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t rf_lvl = radio_change_rfg(0) * 255 / 100;
-        //             decimalToBCD(&frame[6], rf_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t rf_lvl = bcdToDecimal(&frame[6], 4);
-        //             rf_lvl = ceil_uint64(rf_lvl * 100, 255) - params_band_rfg_get();
-        //             uint16_t x = radio_change_rfg((int16_t)(rf_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }                
-        //     }
-        //     if (frame[5] == 0x03) { // SQL level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t sql_lvl = radio_change_sql(0) * 255 / 100;
-        //             decimalToBCD(&frame[6], sql_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t sql_lvl = bcdToDecimal(&frame[6], 4);
-        //             sql_lvl = ceil_uint64(sql_lvl * 100, 255) - params.sql;
-        //             uint16_t x = radio_change_sql((int16_t)(sql_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }                
-        //     } 
-        //     if (frame[5] == 0x06) { // NR level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t nr_lvl = radio_change_nr_level(0) * 255 / 60;
-        //             decimalToBCD(&frame[6], nr_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t nr_lvl = bcdToDecimal(&frame[6], 4);
-        //             nr_lvl = ceil_uint64(nr_lvl * 60, 255) - params.nr_level;
-        //             uint16_t x = radio_change_nr_level((int16_t)(nr_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }
-        //     }
-        //     if (frame[5] == 0x12) { // NB level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t nb_lvl = radio_change_nb_level(0) * 255 / 100;
-        //             decimalToBCD(&frame[6], nb_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t nb_lvl = bcdToDecimal(&frame[6], 4);
-        //             nb_lvl = ceil_uint64(nb_lvl * 100, 255) - params.nb_level;
-        //             uint16_t x = radio_change_nb_level((int16_t)(nb_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }                               
-        //     }
-        //     if (frame[5] == 0x0A) { // TX Power level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t pwr_lvl = radio_change_pwr(0) * 255 / 10;
-        //             decimalToBCD(&frame[6], pwr_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
-        //             pwr_lvl = ceil_uint64(pwr_lvl * 10, 255) - params.pwr;
-        //             uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }                               
-        //     }              
-        //     if (frame[5] == 0x0D) { // DNF level
-        //         if (frame[6] == FRAME_END) {
-        //             uint16_t dnf_lvl = radio_change_dnf_center(0) * 255 / 3000;
-        //             decimalToBCD(&frame[6], dnf_lvl, 4);
-        //             send_frame(9);
-        //         } else {
-        //             uint64_t dnf_lvl = bcdToDecimal(&frame[6], 4);
-        //             dnf_lvl = ceil_uint64(dnf_lvl * 3000, 255) - params.dnf_center;
-        //             uint16_t x = radio_change_dnf_center((int16_t)(dnf_lvl));
-        //             frame[4] = CODE_OK;
-        //             send_frame(6);
-        //         }                               
-        //     }                                     
-        //     break;
-        // }
         case C_CTL_LVL: {
-            switch (frame[5]) {
-                case 0x01: // AF level
-                    handle_level_change(0x01, 0, 55, radio_change_vol, &params.vol, frame);
-                    break;
-                case 0x02: // RF level
-                {
-                    uint16_t rfg = params_band_rfg_get();
-                    handle_level_change(0x02, 0, 100, radio_change_rfg, &rfg, frame);
-                    break;
+            if (frame[5] == 0x01) { // AF level
+                if (frame[6] == FRAME_END) {
+                    uint16_t af_lvl = radio_change_vol(0) * 255 / 55;
+                    decimalToBCD(&frame[6], af_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t af_lvl = bcdToDecimal(&frame[6], 4);
+                    af_lvl = ceil_uint64(af_lvl * 55, 255) - params.vol;
+                    uint16_t x = radio_change_vol((int16_t)(af_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
                 }
-                case 0x03: // SQL level
-                    handle_level_change(0x03, 0, 100, radio_change_sql, &params.sql, frame);
-                    break;
-                case 0x06: // NR level
-                    handle_level_change(0x06, 0, 60, radio_change_nr_level, &params.nr_level, frame);
-                    break;
-                case 0x12: // NB level
-                    handle_level_change(0x12, 0, 100, radio_change_nb_level, &params.nb_level, frame);
-                    break;
-                case 0x0A: // TX Power level
-                    handle_level_change(0x0A, 0.1, 10, radio_change_pwr, &params.pwr, frame);
-                    break;
-                case 0x0D: // DNF level
-                    handle_level_change(0x0D, 100, 3000, radio_change_dnf_center, &params.dnf_center, frame);
-                    break;
             }
+            if (frame[5] == 0x02) { // RF level
+                if (frame[6] == FRAME_END) {
+                    uint16_t rf_lvl = radio_change_rfg(0) * 255 / 100;
+                    decimalToBCD(&frame[6], rf_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t rf_lvl = bcdToDecimal(&frame[6], 4);
+                    rf_lvl = ceil_uint64(rf_lvl * 100, 255) - params_band_rfg_get();
+                    uint16_t x = radio_change_rfg((int16_t)(rf_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }                
+            }
+            if (frame[5] == 0x03) { // SQL level
+                if (frame[6] == FRAME_END) {
+                    uint16_t sql_lvl = radio_change_sql(0) * 255 / 100;
+                    decimalToBCD(&frame[6], sql_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t sql_lvl = bcdToDecimal(&frame[6], 4);
+                    sql_lvl = ceil_uint64(sql_lvl * 100, 255) - params.sql;
+                    uint16_t x = radio_change_sql((int16_t)(sql_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }                
+            } 
+            if (frame[5] == 0x06) { // NR level
+                if (frame[6] == FRAME_END) {
+                    uint16_t nr_lvl = radio_change_nr_level(0) * 255 / 60;
+                    decimalToBCD(&frame[6], nr_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t nr_lvl = bcdToDecimal(&frame[6], 4);
+                    nr_lvl = ceil_uint64(nr_lvl * 60, 255) - params.nr_level;
+                    uint16_t x = radio_change_nr_level((int16_t)(nr_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }
+            }
+            if (frame[5] == 0x12) { // NB level
+                if (frame[6] == FRAME_END) {
+                    uint16_t nb_lvl = radio_change_nb_level(0) * 255 / 100;
+                    decimalToBCD(&frame[6], nb_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t nb_lvl = bcdToDecimal(&frame[6], 4);
+                    nb_lvl = ceil_uint64(nb_lvl * 100, 255) - params.nb_level;
+                    uint16_t x = radio_change_nb_level((int16_t)(nb_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }                               
+            }
+            if (frame[5] == 0x0A) { // TX Power level
+                if (frame[6] == FRAME_END) {
+                    uint16_t pwr_lvl = radio_change_pwr(0) * 255 / 10;
+                    decimalToBCD(&frame[6], pwr_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
+                    pwr_lvl = ceil_uint64(pwr_lvl * 10, 255) - params.pwr;
+                    uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }                               
+            }              
+            if (frame[5] == 0x0D) { // DNF level
+                if (frame[6] == FRAME_END) {
+                    uint16_t dnf_lvl = (radio_change_dnf_center(0) - 100) * 255 / (3000 - 100);
+                    decimalToBCD(&frame[6], dnf_lvl, 4);
+                    send_frame(9);
+                } else {
+                    uint64_t dnf_lvl = bcdToDecimal(&frame[6], 4);
+                    dnf_lvl = round_up_to_next_50(ceil_uint64(dnf_lvl * (3000 - 100), 255)) + 100 - params.dnf_center;
+                    uint16_t x = radio_change_dnf_center((int16_t)(dnf_lvl));
+                    frame[4] = CODE_OK;
+                    send_frame(6);
+                }                               
+            }                                     
             break;
-        }              
+        }
+        // case C_CTL_LVL: {
+        //     switch (frame[5]) {
+        //         case 0x01: // AF level
+        //             handle_level_change(0x01, 0, 55, radio_change_vol, &params.vol, frame);
+        //             break;
+        //         case 0x02: // RF level
+        //         {
+        //             uint16_t rfg = params_band_rfg_get();
+        //             handle_level_change(0x02, 0, 100, radio_change_rfg, &rfg, frame);
+        //             break;
+        //         }
+        //         case 0x03: // SQL level
+        //             handle_level_change(0x03, 0, 100, radio_change_sql, &params.sql, frame);
+        //             break;
+        //         case 0x06: // NR level
+        //             handle_level_change(0x06, 0, 60, radio_change_nr_level, &params.nr_level, frame);
+        //             break;
+        //         case 0x12: // NB level
+        //             handle_level_change(0x12, 0, 100, radio_change_nb_level, &params.nb_level, frame);
+        //             break;
+        //         case 0x0A: // TX Power level
+        //             handle_level_change(0x0A, 0.1, 10, radio_change_pwr, &params.pwr, frame);
+        //             break;
+        //         case 0x0D: // DNF level
+        //             handle_level_change(0x0D, 100, 3000, radio_change_dnf_center, &params.dnf_center, frame);
+        //             break;
+        //     }
+        //     break;
+        // }              
         case C_CTL_PTT: {
             if (frame[5] == 0x00) { // PTT function
                 if (frame[6] == FRAME_END) {

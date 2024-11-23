@@ -162,6 +162,10 @@ uint64_t ceil_uint64(uint64_t numerator, uint64_t denominator) {
     return (numerator + denominator - 1) / denominator;
 }
 
+uint64_t round_up_to_next_50(uint64_t number) {
+    return ((number + 49) / 50) * 50;
+}
+
 int loop_modes(int16_t dir, int mode, uint64_t modes, int max_val) {
     while (1) {
         if (dir > 0) {
