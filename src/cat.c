@@ -435,7 +435,7 @@ static void frame_parse(uint16_t len) {
             if (frame[5] == 0x0A) { // TX Power level
                 if (frame[6] == FRAME_END) {
                     uint16_t pwr_lvl = radio_change_pwr(0) * 255 / 10;
-                    msg_update_text_fmt("#FFFFFF PWR: %u", pwr_lvl);
+                    msg_update_text_fmt("#FFFFFF PWR: %.2f", radio_change_pwr(0));
                     decimalToBCD(&frame[6], pwr_lvl, 4);
                     send_frame(9);
                 } else {
