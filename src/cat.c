@@ -434,13 +434,13 @@ static void frame_parse(uint16_t len) {
             }
             if (frame[5] == 0x0A) { // TX Power level
                 if (frame[6] == FRAME_END) {
-                    uint16_t pwr_lvl = radio_change_pwr(0) * 255 / 10;
-                    msg_update_text_fmt("#FFFFFF PWR: %.2f", radio_change_pwr(0));
+                    uint16_t pwr_lvl = radio_change_pwr(0) * 255.0 / 10.0;
+                    msg_update_text_fmt("#FFFFFF PWR: %.4f | %u", radio_change_pwr(0), pwr_lvl);
                     decimalToBCD(&frame[6], pwr_lvl, 4);
                     send_frame(9);
                 } else {
                     uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
-                    pwr_lvl = ceil_uint64(pwr_lvl * 10, 255) - params.pwr;
+                    pwr_lvl = ceil_uint64(pwr_lvl * 10.0, 255.0) - params.pwr;
                     uint16_t x = radio_change_pwr((int16_t)(pwr_lvl * 10));
                     frame[4] = CODE_OK;
                     send_frame(6);
