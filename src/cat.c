@@ -173,13 +173,23 @@ static void send_code(uint8_t code) {
 }
 
 void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
+        frame[0] = FRAME_PRE; 
+        frame[1] = FRAME_PRE;
+        frame[2] = 0xE0;
+        frame[3] = 0xA4;
+        frame[4] = cmd;
     if(subcmd == NULL) {
-        uint8_t frame[6] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, value};
-        send_frame(7);
+        frame[5] = value;
+        send_frame(7);        
+        // uint8_t frame[6] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, value};
+        // send_frame(7);
     }
     else {
-        uint8_t frame[7] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, subcmd, value};
+        frame[5] = subcmd;
+        frame[6] = value;
         send_frame(8);
+        // uint8_t frame[7] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, subcmd, value};
+        // send_frame(8);
     }
 }
 
