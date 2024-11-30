@@ -17,6 +17,8 @@
 #include "cw.h"
 #include "pubsub_ids.h"
 
+#include "cat.h"
+
 #include <aether_radio/x6100_control/low/flow.h>
 #include <aether_radio/x6100_control/low/gpio.h>
 
@@ -460,6 +462,8 @@ bool radio_change_pre() {
     WITH_RADIO_LOCK(x6100_control_vfo_pre_set(cur_vfo, pre));
     x6100_att_t att = params_band_cur_att_get();
     WITH_RADIO_LOCK(x6100_control_vfo_att_set(cur_vfo, att));
+
+    cat_auto(0x16, 0x02, pre ? 0x01 : 0x00);
 
     voice_say_text_fmt("Preamplifier %s", pre ? "On" : "Off");
     return pre;

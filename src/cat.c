@@ -172,6 +172,18 @@ static void send_code(uint8_t code) {
     send_frame(6);
 }
 
+void cat_auto(uint8_t cmd, uint8_t subcmd, uint8_t value) {
+    frame[0] = 0xFE; 
+    frame[1] = 0xFE;
+    frame[3] = 0xE0;
+    frame[4] = 0xA4;
+    frame[5] = cmd;
+    frame[6] = subcmd;
+    frame[7] = value;
+    frame[8] = 0xFD;
+    send_frame(9);
+}
+
 static void set_freq(void * arg) {
     if (!arg) {
         LV_LOG_ERROR("arg is NULL");
