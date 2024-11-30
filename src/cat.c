@@ -765,9 +765,7 @@ static void frame_parse(uint16_t len) {
             } else {
                     LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
                     send_code(CODE_NG);
-                    break;
                 }
-            }
             break;
         }
         case C_RD_TRXID: {
