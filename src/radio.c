@@ -332,6 +332,7 @@ void radio_init(radio_state_change_t tx_cb, radio_state_change_t rx_cb, radio_st
 }
 
 radio_state_t radio_get_state() {
+    cat_transceive(0x1c, 0x00, state ? 0 : 1);
     return state;
 }
 
@@ -463,7 +464,7 @@ bool radio_change_pre() {
     x6100_att_t att = params_band_cur_att_get();
     WITH_RADIO_LOCK(x6100_control_vfo_att_set(cur_vfo, att));
 
-    cat_auto(0x16, 0x02, pre ? 0x01 : 0x00);
+    cat_transceive(0x16, 0x02, pre ? 0x01 : 0x00);
 
     voice_say_text_fmt("Preamplifier %s", pre ? "On" : "Off");
     return pre;
@@ -479,6 +480,9 @@ bool radio_change_att() {
     x6100_pre_t pre = params_band_cur_pre_get();
     WITH_RADIO_LOCK(x6100_control_vfo_pre_set(cur_vfo, pre));
     voice_say_text_fmt("Attenuator %s", att ? "On" : "Off");
+
+    cat_transceive(0x11, NULL, att ? 0x00 : 0x01);
+
     return att;
 }
 
@@ -650,6 +654,8 @@ void radio_change_agc() {
     agc = params_band_cur_agc_set(agc);
 
     WITH_RADIO_LOCK(x6100_control_vfo_agc_set(params_band_vfo_get(), agc));
+
+    cat_transceive(0x16, 0x12, agc);
 }
 
 void radio_change_atu() {
@@ -661,6 +667,8 @@ void radio_change_atu() {
 
     radio_load_atu();
     voice_say_text_fmt("Auto tuner %s", params.atu ? "On" : "Off");
+
+    cat_transceive(0x1c, 0x01, params.atu ? 0 : 1);
 }
 
 void radio_start_atu() {
@@ -978,6 +986,8 @@ bool radio_change_dnf(int16_t d) {
 
     WITH_RADIO_LOCK(x6100_control_dnf_set(params.dnf));
 
+    cat_transceive(0x16, 0x41, params.dnf ? 0x00 : 0x01);
+
     return params.dnf;
 }
 
@@ -1015,6 +1025,8 @@ bool radio_change_nb(int16_t d) {
 
     WITH_RADIO_LOCK(x6100_control_nb_set(params.nb));
 
+    cat_transceive(0x16, 0x40, params.nb ? 0x00 : 0x01);
+
     return params.nb;
 }
 
@@ -1051,6 +1063,8 @@ bool radio_change_nr(int16_t d) {
     lv_msg_send(MSG_PARAM_CHANGED, NULL);
 
     WITH_RADIO_LOCK(x6100_control_nr_set(params.nr));
+
+    cat_transceive(0x16, 0x40, params.nr ? 0x00 : 0x01);
 
     return params.nr;
 }

@@ -11,4 +11,4 @@
 #include <stdint.h>
 
 void cat_init();
-void cat_auto(uint8_t cmd, uint8_t subcmd, uint8_t value);
+void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value);

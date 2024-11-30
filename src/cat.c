@@ -172,16 +172,15 @@ static void send_code(uint8_t code) {
     send_frame(6);
 }
 
-void cat_auto(uint8_t cmd, uint8_t subcmd, uint8_t value) {
-    frame[0] = 0xFE; 
-    frame[1] = 0xFE;
-    frame[2] = 0xE0;
-    frame[3] = 0xA4;
-    frame[4] = cmd;
-    frame[5] = subcmd;
-    frame[6] = value;
-    frame[7] = 0xFD;
-    send_frame(8);
+void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
+    if(subcmd == NULL) {
+        uint8_t frame[6] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, value};
+        send_frame(7);
+    }
+    else {
+        uint8_t frame[7] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, subcmd, value};
+        send_frame(8);
+    }
 }
 
 static void set_freq(void * arg) {
