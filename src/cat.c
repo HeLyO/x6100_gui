@@ -296,8 +296,51 @@ static uint8_t get_if_bandwidth() {
     case x6100_mode_am:
     case x6100_mode_nfm:
         return (bw - 100) / 200;
+        break;
     default:
         return 31;
+        break;
+    }
+}
+
+static uint8_t get_if_low() {
+    uint32_t lf = params_current_mode_filter_low_get();
+    switch (params_band_cur_mode_get())
+    {
+    case x6100_mode_cw:
+    case x6100_mode_cwr:
+    case x6100_mode_lsb:
+    case x6100_mode_lsb_dig:
+    case x6100_mode_usb:
+    case x6100_mode_usb_dig:
+        return lf / 10;
+        break;
+    case x6100_mode_am:
+    case x6100_mode_nfm:
+        return 0;
+        break;
+    default:
+        return 0;
+        break;
+    }
+}
+
+static uint8_t get_if_high() {
+    uint32_t hf = params_current_mode_filter_high_get();
+    switch (params_band_cur_mode_get())
+    {
+    case x6100_mode_cw:
+    case x6100_mode_cwr:
+    case x6100_mode_lsb:
+    case x6100_mode_lsb_dig:
+    case x6100_mode_usb:
+    case x6100_mode_usb_dig:
+    case x6100_mode_am:
+    case x6100_mode_nfm:
+        return (hf - 25) / 50;
+        break;
+    default:
+        return 0;
         break;
     }
 }
@@ -703,6 +746,16 @@ static void frame_parse(uint16_t len) {
                     frame[6] = get_if_bandwidth();
                     send_frame(8);
                     break;
+                
+                case 0x10: // get low IF filter value
+                    frame[6] = get_if_low();
+                    send_frame(8);
+                    break;
+
+                case 0x11: // get high IF filter value
+                    frame[6] = get_if_high();
+                    send_frame(8);
+                    break;
 
                 default:
                     LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
@@ -710,8 +763,10 @@ static void frame_parse(uint16_t len) {
                     break;
                 }
             } else {
-                LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
-                send_code(CODE_NG);
+                    LV_LOG_WARN("Unsupported %02X:%02X (Len %i)", frame[4], frame[5], len);
+                    send_code(CODE_NG);
+                    break;
+                }
             }
             break;
         }
