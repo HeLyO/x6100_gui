@@ -390,6 +390,8 @@ uint16_t radio_change_vol(int16_t df) {
 
     CHANGE_PARAM(new_val, params.vol, params.dirty.vol, x6100_control_rxvol_set);
 
+    cat_transceive(0x14, 0x01, params.vol * 255 / 55);
+
     return params.vol;
 }
 
@@ -439,6 +441,8 @@ uint16_t radio_change_rfg(int16_t df) {
 
     WITH_RADIO_LOCK(x6100_control_rfg_set(rfg));
 
+    cat_transceive(0x14, 0x02, rfg * 255 / 100);
+
     return rfg;
 }
 
@@ -450,6 +454,8 @@ uint16_t radio_change_sql(int16_t df) {
     uint8_t new_val = limit(params.sql + df, 0, 100);
 
     CHANGE_PARAM(new_val, params.sql, params.dirty.sql, x6100_control_sql_set);
+
+    cat_transceive(0x14, 0x03, params.sql * 255 / 100);
 
     return params.sql;
 }
@@ -481,7 +487,7 @@ bool radio_change_att() {
     WITH_RADIO_LOCK(x6100_control_vfo_pre_set(cur_vfo, pre));
     voice_say_text_fmt("Attenuator %s", att ? "On" : "Off");
 
-    cat_transceive(0x11, NULL, att ? 0x00 : 0x01);
+    cat_transceive(0x11, 0xFF, att ? 0x01 : 0x00);
 
     return att;
 }
@@ -668,7 +674,7 @@ void radio_change_atu() {
     radio_load_atu();
     voice_say_text_fmt("Auto tuner %s", params.atu ? "On" : "Off");
 
-    cat_transceive(0x1c, 0x01, params.atu ? 0 : 1);
+    cat_transceive(0x1c, 0x01, params.atu ? 1 : 0);
 }
 
 void radio_start_atu() {
@@ -737,6 +743,8 @@ float radio_change_pwr(int16_t d) {
     new_val = LV_MAX(0.1f, new_val);
 
     CHANGE_PARAM(new_val, params.pwr, params.dirty.pwr, x6100_control_txpwr_set);
+
+    cat_transceive(0x14, 0x0A, params.pwr * 255 / 10 + 0.01f);
 
     return params.pwr;
 }
@@ -935,6 +943,8 @@ void radio_toggle_split() {
 
     WITH_RADIO_LOCK(x6100_control_split_set(split));
     voice_say_text_fmt("Split %s", split ? "On" : "Off");
+
+    cat_transceive(0x0F, 0xFF, split ? 1 : 0);
 }
 
 void radio_poweroff() {
@@ -986,7 +996,7 @@ bool radio_change_dnf(int16_t d) {
 
     WITH_RADIO_LOCK(x6100_control_dnf_set(params.dnf));
 
-    cat_transceive(0x16, 0x41, params.dnf ? 0x00 : 0x01);
+    cat_transceive(0x16, 0x41, params.dnf ? 0x01 : 0x00);
 
     return params.dnf;
 }
@@ -998,6 +1008,8 @@ uint16_t radio_change_dnf_center(int16_t d) {
 
     int32_t new_val = limit(params.dnf_center + d * 50, 100, 3000);
     CHANGE_PARAM(new_val, params.dnf_center, params.dirty.dnf_center, x6100_control_dnf_center_set);
+
+    cat_transceive(0x14, 0x0D, (params.dnf_center - 100) * 255 / (3000 - 100));
 
     return params.dnf_center;
 }
@@ -1025,7 +1037,7 @@ bool radio_change_nb(int16_t d) {
 
     WITH_RADIO_LOCK(x6100_control_nb_set(params.nb));
 
-    cat_transceive(0x16, 0x40, params.nb ? 0x00 : 0x01);
+    cat_transceive(0x16, 0x22, params.nb ? 0x01 : 0x00);
 
     return params.nb;
 }
@@ -1037,6 +1049,8 @@ uint8_t radio_change_nb_level(int16_t d) {
 
     int32_t new_val = limit(params.nb_level + d * 5, 0, 100);
     CHANGE_PARAM(new_val, params.nb_level, params.dirty.nb_level, x6100_control_nb_level_set);
+
+    cat_transceive(0x14, 0x12, params.nb_level * 255 / 100);
 
     return params.nb_level;
 }
@@ -1064,7 +1078,7 @@ bool radio_change_nr(int16_t d) {
 
     WITH_RADIO_LOCK(x6100_control_nr_set(params.nr));
 
-    cat_transceive(0x16, 0x40, params.nr ? 0x00 : 0x01);
+    cat_transceive(0x16, 0x40, params.nr ? 0x01 : 0x00);
 
     return params.nr;
 }
@@ -1075,6 +1089,8 @@ uint8_t radio_change_nr_level(int16_t d) {
     }
     int32_t new_val = limit(params.nr_level + d * 5, 0, 60);
     CHANGE_PARAM(new_val, params.nr_level, params.dirty.nr_level, x6100_control_nr_level_set);
+
+    cat_transceive(0x14, 0x06, params.nr_level * 255 / 60);
 
     return params.nr_level;
 }

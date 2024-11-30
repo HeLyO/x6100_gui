@@ -178,7 +178,7 @@ void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
         frame[2] = 0xE0;
         frame[3] = 0xA4;
         frame[4] = cmd;
-    if(subcmd == NULL) {
+    if(subcmd == 0xFF) {
         frame[5] = value;
         send_frame(7);        
         // uint8_t frame[6] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, value};
