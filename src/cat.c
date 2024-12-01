@@ -215,7 +215,7 @@ void cat_transceive_freq() {
     send_frame(11);
 }
 
-void cat_transceive_mode(uint8_t vfo, uint8_t mode) {
+void cat_transceive_mode(uint8_t vfo, x6100_mode_t mode) {
     frame[0] = FRAME_PRE; 
     frame[1] = FRAME_PRE;
     frame[2] = 0xE0;
