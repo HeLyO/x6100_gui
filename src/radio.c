@@ -534,6 +534,8 @@ void radio_set_mode(x6100_vfo_t vfo, x6100_mode_t mode) {
 
     WITH_RADIO_LOCK(x6100_control_vfo_mode_set(vfo, mode));
     lv_msg_send(MSG_RADIO_MODE_CHANGED, NULL);
+
+    cat_transceive_mode(vfo, mode);
 }
 
 void radio_set_cur_mode(x6100_mode_t mode) {
