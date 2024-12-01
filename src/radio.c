@@ -441,7 +441,7 @@ uint16_t radio_change_rfg(int16_t df) {
 
     WITH_RADIO_LOCK(x6100_control_rfg_set(rfg));
 
-    cat_transceive(0x14, 0x02, rfg * 255 / 100);
+    cat_transceive_level(0x14, 0x02, rfg * 255 / 100);
 
     return rfg;
 }
@@ -455,7 +455,7 @@ uint16_t radio_change_sql(int16_t df) {
 
     CHANGE_PARAM(new_val, params.sql, params.dirty.sql, x6100_control_sql_set);
 
-    cat_transceive(0x14, 0x03, params.sql * 255 / 100);
+    cat_transceive_level(0x14, 0x03, new_val * 255 / 100);
 
     return params.sql;
 }
@@ -744,7 +744,7 @@ float radio_change_pwr(int16_t d) {
 
     CHANGE_PARAM(new_val, params.pwr, params.dirty.pwr, x6100_control_txpwr_set);
 
-    cat_transceive(0x14, 0x0A, params.pwr * 255 / 10 + 0.01f);
+    cat_transceive_level(0x14, 0x0A, new_val * 255 / 10 + 0.01f);
 
     return params.pwr;
 }
@@ -1009,7 +1009,7 @@ uint16_t radio_change_dnf_center(int16_t d) {
     int32_t new_val = limit(params.dnf_center + d * 50, 100, 3000);
     CHANGE_PARAM(new_val, params.dnf_center, params.dirty.dnf_center, x6100_control_dnf_center_set);
 
-    cat_transceive(0x14, 0x0D, (params.dnf_center - 100) * 255 / (3000 - 100));
+    cat_transceive_level(0x14, 0x0D, (new_val - 100) * 255 / (3000 - 100));
 
     return params.dnf_center;
 }
@@ -1050,7 +1050,7 @@ uint8_t radio_change_nb_level(int16_t d) {
     int32_t new_val = limit(params.nb_level + d * 5, 0, 100);
     CHANGE_PARAM(new_val, params.nb_level, params.dirty.nb_level, x6100_control_nb_level_set);
 
-    cat_transceive(0x14, 0x12, params.nb_level * 255 / 100);
+    cat_transceive_level(0x14, 0x12, new_val * 255 / 100);
 
     return params.nb_level;
 }
@@ -1090,7 +1090,7 @@ uint8_t radio_change_nr_level(int16_t d) {
     int32_t new_val = limit(params.nr_level + d * 5, 0, 60);
     CHANGE_PARAM(new_val, params.nr_level, params.dirty.nr_level, x6100_control_nr_level_set);
 
-    cat_transceive(0x14, 0x06, params.nr_level * 255 / 60);
+    cat_transceive_level(0x14, 0x06, new_val * 255 / 60);
 
     return params.nr_level;
 }
