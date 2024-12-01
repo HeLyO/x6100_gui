@@ -332,7 +332,7 @@ void radio_init(radio_state_change_t tx_cb, radio_state_change_t rx_cb, radio_st
 }
 
 radio_state_t radio_get_state() {
-    cat_transceive(0x1c, 0x00, state ? 0 : 1);
+    //cat_transceive(0x1c, 0x00, state ? 0 : 1);
     return state;
 }
 
@@ -390,7 +390,7 @@ uint16_t radio_change_vol(int16_t df) {
 
     CHANGE_PARAM(new_val, params.vol, params.dirty.vol, x6100_control_rxvol_set);
 
-    cat_transceive(0x14, 0x01, params.vol * 255 / 55);
+    cat_transceive_level(0x14, 0x01, params.vol * 255 / 55);
 
     return params.vol;
 }

@@ -173,11 +173,11 @@ static void send_code(uint8_t code) {
 }
 
 void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
-        frame[0] = FRAME_PRE; 
-        frame[1] = FRAME_PRE;
-        frame[2] = 0xE0;
-        frame[3] = 0xA4;
-        frame[4] = cmd;
+    frame[0] = FRAME_PRE; 
+    frame[1] = FRAME_PRE;
+    frame[2] = 0xE0;
+    frame[3] = 0xA4;
+    frame[4] = cmd;
     if(subcmd == 0xFF) {
         frame[5] = value;
         send_frame(7);        
@@ -191,6 +191,17 @@ void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
         // uint8_t frame[7] = {FRAME_PRE, FRAME_PRE, 0xE0, 0xA4, cmd, subcmd, value};
         // send_frame(8);
     }
+}
+
+void cat_transceive_level(uint8_t cmd, uint8_t subcmd, uint16_t value) {
+    frame[0] = FRAME_PRE; 
+    frame[1] = FRAME_PRE;
+    frame[2] = 0xE0;
+    frame[3] = 0xA4;
+    frame[4] = cmd;
+    frame[5] = subcmd;
+    decimalToBCD(&frame[6], value, 4);
+    send_frame(8);
 }
 
 static void set_freq(void * arg) {
