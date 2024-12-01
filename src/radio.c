@@ -376,6 +376,8 @@ uint64_t radio_change_freq(int32_t df, uint64_t *prev_freq) {
 
     radio_set_freq(align_long(*prev_freq + df, abs(df)));
 
+    cat_transceive_freq();
+
     return params_band_cur_freq_get();
 }
 

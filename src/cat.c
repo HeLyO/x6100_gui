@@ -193,15 +193,26 @@ void cat_transceive(uint8_t cmd, uint8_t subcmd, uint8_t value) {
     }
 }
 
-void cat_transceive_level(uint8_t cmd, uint8_t subcmd, uint16_t value) {
+void cat_transceive_level(uint8_t cmd, uint8_t subcmd, uint16_t level) {
     frame[0] = FRAME_PRE; 
     frame[1] = FRAME_PRE;
     frame[2] = 0xE0;
     frame[3] = 0xA4;
     frame[4] = cmd;
     frame[5] = subcmd;
-    decimalToBCD(&frame[6], value, 4);
+    decimalToBCD(&frame[6], level, 4);
     send_frame(9);
+}
+
+void cat_transceive_freq() {
+    frame[0] = FRAME_PRE; 
+    frame[1] = FRAME_PRE;
+    frame[2] = 0xE0;
+    frame[3] = 0xA4;
+    frame[4] = 0x03;
+    uint64_t cur_freq = params_band_cur_freq_get();
+    to_bcd(&frame[5], cur_freq, 10);
+    send_frame(11);
 }
 
 static void set_freq(void * arg) {
