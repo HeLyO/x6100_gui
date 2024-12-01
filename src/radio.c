@@ -390,7 +390,7 @@ uint16_t radio_change_vol(int16_t df) {
 
     CHANGE_PARAM(new_val, params.vol, params.dirty.vol, x6100_control_rxvol_set);
 
-    cat_transceive_level(0x14, 0x01, params.vol * 255 / 55);
+    cat_transceive_level(0x14, 0x01, 10 * 255 / 55);
 
     return params.vol;
 }
