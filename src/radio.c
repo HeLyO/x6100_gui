@@ -665,7 +665,7 @@ void radio_change_agc() {
 
     WITH_RADIO_LOCK(x6100_control_vfo_agc_set(params_band_vfo_get(), agc));
 
-    cat_transceive(0x16, 0x12, agc);
+    cat_transceive(0x16, 0x12, get_agc_mode());
 }
 
 void radio_change_atu() {
@@ -930,6 +930,8 @@ x6100_vfo_t radio_set_vfo(x6100_vfo_t vfo) {
 
     WITH_RADIO_LOCK(x6100_control_vfo_set(vfo));
     lv_msg_send(MSG_RADIO_MODE_CHANGED, NULL);
+
+    cat_transceive(0x07, 0xFF, vfo);
 }
 
 x6100_vfo_t radio_toggle_vfo() {

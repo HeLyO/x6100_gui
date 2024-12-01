@@ -222,7 +222,7 @@ void cat_transceive_mode(uint8_t vfo, uint8_t mode) {
     frame[3] = 0xA4;
     frame[4] = 0x26;
     frame[5] = vfo;
-    frame[6] = mode;
+    frame[6] = x_mode_2_ci_mode(mode);
     frame[7] = 0;
     frame[8] = 1;    
     send_frame(10);
