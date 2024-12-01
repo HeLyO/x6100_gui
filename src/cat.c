@@ -201,7 +201,7 @@ void cat_transceive_level(uint8_t cmd, uint8_t subcmd, uint16_t value) {
     frame[4] = cmd;
     frame[5] = subcmd;
     decimalToBCD(&frame[6], value, 4);
-    send_frame(8);
+    send_frame(9);
 }
 
 static void set_freq(void * arg) {
