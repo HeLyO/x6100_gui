@@ -558,6 +558,9 @@ uint32_t radio_change_filter_low(int32_t freq) {
         radio_filter_set(&new_low, &new_high);
     else
         radio_filter_set(&new_low, NULL);
+    
+    uint16_t lf = new_low / 10;
+    cat_transceive_level(0x1A, 0x10, lf);
 
     return new_low;
 }
@@ -573,6 +576,9 @@ uint32_t radio_change_filter_high(int32_t freq) {
         radio_filter_set(&new_low, &new_high);
     else
         radio_filter_set(NULL, &new_high);
+
+    uint16_t hf = (new_high - 25) / 50;
+    cat_transceive_level(0x1A, 0x11, hf);        
 
     return new_high;
 }
