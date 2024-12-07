@@ -596,7 +596,6 @@ uint32_t radio_change_filter_bw(int32_t bw) {
     return new_bw;
 }
 
-
 static void update_agc_time() {
     x6100_agc_t     agc = params_band_cur_agc_get();
     x6100_mode_t    mode = radio_current_mode();

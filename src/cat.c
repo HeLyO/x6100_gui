@@ -238,7 +238,6 @@ static void set_vfo(void * arg) {
     lv_event_send(lv_scr_act(), EVENT_SCREEN_UPDATE, NULL);
 }
 
-
 static x6100_mode_t ci_mode_2_x_mode(uint8_t mode, uint8_t *dig_mode) {
     x6100_mode_t r_mode;
     bool data_mode = (dig_mode != NULL) && *dig_mode;
