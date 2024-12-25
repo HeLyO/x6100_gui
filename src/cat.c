@@ -514,7 +514,6 @@ static void frame_parse(uint16_t len) {
                 } else {
                     uint64_t nr_lvl = bcdToDecimal(&frame[6], 4);
                     nr_lvl = ceil_uint64(nr_lvl * 60, 255) / 5 - params.nr_level / 5;
-                    msg_update_text_fmt("#FFFFFF NR: %llu", nr_lvl);
                     uint16_t x = radio_change_nr_level((int16_t)(nr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
@@ -527,8 +526,8 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t nb_lvl = bcdToDecimal(&frame[6], 4);
-                    nb_lvl = ceil_uint64(nb_lvl * 100, 255) - params.nb_level;
-                    uint16_t x = radio_change_nb_level((int16_t)(nb_lvl / 5));
+                    nb_lvl = ceil_uint64(nb_lvl * 100, 255) / 5 - params.nb_level /5;
+                    uint16_t x = radio_change_nb_level((int16_t)(nb_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }                               
@@ -541,8 +540,8 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
-                    pwr_lvl = ceil_uint64(pwr_lvl * 10.0, 255.0) - params.pwr;
-                    uint16_t x = radio_change_pwr((int16_t)(pwr_lvl * 10));
+                    pwr_lvl = (ceil_uint64(pwr_lvl * 10.0, 255.0) - params.pwr)*10;
+                    uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }                               
@@ -554,8 +553,8 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t dnf_lvl = bcdToDecimal(&frame[6], 4);
-                    dnf_lvl = round_up_to_next_50(ceil_uint64(dnf_lvl * (3000 - 100), 255)) + 100 - params.dnf_center;
-                    uint16_t x = radio_change_dnf_center((int16_t)(dnf_lvl / 50));
+                    dnf_lvl = (round_up_to_next_50(ceil_uint64(dnf_lvl * (3000 - 100), 255)) + 100) / 50 - params.dnf_center / 50;
+                    uint16_t x = radio_change_dnf_center((int16_t)(dnf_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }                               
