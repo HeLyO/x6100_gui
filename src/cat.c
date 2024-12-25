@@ -513,9 +513,9 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t nr_lvl = bcdToDecimal(&frame[6], 4);
-                    nr_lvl = ceil_uint64(nr_lvl * 60, 255) - params.nr_level;
-                    msg_update_text_fmt("#FFFFFF NR: %u | %u | %u", params.nr_level, ceil_uint64(nr_lvl * 60, 255), nr_lvl);
-                    uint16_t x = radio_change_nr_level((int16_t)(nr_lvl / 5));
+                    nr_lvl = ceil_uint64(nr_lvl * 60, 255) / 5 - params.nr_level / 5;
+                    msg_update_text_fmt("#FFFFFF NR: %llu", nr_lvl);
+                    uint16_t x = radio_change_nr_level((int16_t)(nr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }
