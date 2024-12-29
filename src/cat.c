@@ -539,12 +539,12 @@ static void frame_parse(uint16_t len) {
                     decimalToBCD(&frame[6], pwr_lvl, 4);
                     send_frame(9);
                 } else {
-                    uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
+                    uint64_t raw_pwr_lvl = bcdToDecimal(&frame[6], 4);
                     //msg_update_text_fmt("#FFFFFF PWR: %llu | %.1f", pwr_lvl, (float)(pwr_lvl) * 10 / 255);
-                    //pwr_lvl = (float)(pwr_lvl) * 10 / 255 / 0.1 - params.pwr / 0.1;
-                    pwr_lvl = ceil_uint64(pwr_lvl * 10, 255 * 0.1) - params.pwr / 0.1f;
-                    msg_update_text_fmt("#FFFFFF PWR: %llu", pwr_lvl);
-                    uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
+                    int64_t pwr_lvl = (float)(raw_pwr_lvl) * 10 / 255 / 0.1 - params.pwr / 0.1;
+                    //pwr_lvl = ceil_uint64(pwr_lvl * 10, 255 * 0.1) - params.pwr / 0.1f;
+                    msg_update_text_fmt("#FFFFFF PWR: %" PRId64 "", pwr_lvl);
+                    float x = radio_change_pwr((int16_t)(pwr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);
                 }                               

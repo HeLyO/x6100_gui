@@ -215,6 +215,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
     lv_draw_line_dsc_init(&main_center_line_dsc);
     main_center_line_dsc.color = lv_color_hex(0xFF0000);
     main_center_line_dsc.width = 1;
+    main_center_line_dsc.opa = LV_OPA_COVER;
     main_center_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
 
     main_a.x = x1 + w / 2;
@@ -398,7 +399,6 @@ void spectrum_change_freq(int16_t df) {
 
 static void zoom_changed_cd(void * s, lv_msg_t * m) {
     zoom_factor = *(uint16_t *) lv_msg_get_payload(m);
-    main_center_line_dsc.width = zoom_factor / 2 + 2;
     dsp_set_spectrum_factor(zoom_factor);
     spectrum_clear();
 }
