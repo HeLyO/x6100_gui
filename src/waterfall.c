@@ -76,10 +76,11 @@ lv_obj_t * waterfall_init(lv_obj_t * parent, uint64_t cur_freq) {
     lv_style_init(&middle_line_style);
     lv_style_set_line_width(&middle_line_style, 1);
     //lv_style_set_line_color(&middle_line_style, lv_color_hex(0xAAAAAA));
-    lv_style_set_line_color(&middle_line_style, lv_palette_main(LV_PALETTE_RED));
+    lv_style_set_line_color(&middle_line_style, lv_color_hex(0xFF0000));
     //lv_style_set_line_opa(&middle_line_style, LV_OPA_60);
     lv_style_set_line_opa(&middle_line_style, LV_OPA_COVER);
-    lv_style_set_blend_mode(&middle_line_style, LV_BLEND_MODE_ADDITIVE);
+    //lv_style_set_blend_mode(&middle_line_style, LV_BLEND_MODE_ADDITIVE);
+    lv_style_set_blend_mode(&middle_line_style, LV_BLEND_MODE_NORMAL);
 
     lv_msg_subscribe(MSG_SPECTRUM_ZOOM_CHANGED, zoom_changed_cd, NULL);
 
