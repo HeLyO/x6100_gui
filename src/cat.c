@@ -540,7 +540,7 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
-                    msg_update_text_fmt("#FFFFFF PWR: %u | %.1f", pwr_lvl, ceil_uint64(pwr_lvl * 10.0, 255.0) / 0.1f);
+                    msg_update_text_fmt("#FFFFFF PWR: %u | %.1f", pwr_lvl, pwr_lvl * 10.0 / 255.0);
                     pwr_lvl = ceil_uint64(pwr_lvl * 10.0, 255.0) / 0.1f - params.pwr / 0.1f;
                     //msg_update_text_fmt("#FFFFFF PWR: %.1f | %.1f", radio_change_pwr(0), pwr_lvl);
                     uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
