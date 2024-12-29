@@ -77,7 +77,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
     lv_draw_line_dsc_init(&main_line_dsc);
 
     main_line_dsc.color = lv_color_hex(0xAAAAAA);
-        main_line_dsc.width = 1;
+    main_line_dsc.width = 1;
 
     lv_draw_line_dsc_init(&peak_line_dsc);
 
@@ -211,6 +211,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
     /* Center */
 
     main_line_dsc.color = lv_color_hex(0xFF0000);
+    main_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
     main_line_dsc.width = 1;
 
     main_a.x = x1 + w / 2;
