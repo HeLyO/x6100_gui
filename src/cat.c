@@ -541,8 +541,8 @@ static void frame_parse(uint16_t len) {
                 } else {
                     uint64_t pwr_lvl = bcdToDecimal(&frame[6], 4);
                     //msg_update_text_fmt("#FFFFFF PWR: %llu | %.1f", pwr_lvl, (float)(pwr_lvl) * 10 / 255);
-                    pwr_lvl = ((float)(pwr_lvl) * 10 / 255 - params.pwr) / 0.1f;
-                    msg_update_text_fmt("#FFFFFF PWR: %.1f | %u", (float)(pwr_lvl), pwr_lvl);
+                    pwr_lvl = (float)(pwr_lvl) * 10 / 255 / 0.1 - params.pwr / 0.1;
+                    msg_update_text_fmt("#FFFFFF PWR: %.1f", (float)(pwr_lvl));
                     uint16_t x = radio_change_pwr((int16_t)(pwr_lvl));
                     frame[4] = CODE_OK;
                     send_frame(6);

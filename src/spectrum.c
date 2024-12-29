@@ -212,6 +212,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
 
     /* Center */
 
+    lv_draw_line_dsc_init(&main_center_line_dsc);
     main_center_line_dsc.color = lv_color_hex(0xFF0000);
     main_center_line_dsc.width = 1;
     main_center_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
