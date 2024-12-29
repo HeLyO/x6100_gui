@@ -32,7 +32,7 @@ params_t params = {
 
     .spectrum_beta          = 70,
     .spectrum_filled        = true,
-    .spectrum_peak          = true,
+    .spectrum_peak          = false,
     .spectrum_peak_hold     = 5000,
     .spectrum_peak_speed    = 0.5f,
     .spectrum_auto_min      = { .x = true,  .name = "spectrum_auto_min",        .voice = "Auto minimum of spectrum" },
@@ -56,7 +56,7 @@ params_t params = {
     .mic                    = x6100_mic_auto,
     .hmic                   = 20,
     .imic                   = 30,
-    .charger                = true,
+    .charger                = false,
     .bias_drive             = 450,
     .bias_final             = 650,
     .rit                    = 0,
