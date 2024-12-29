@@ -397,5 +397,5 @@ static void zoom_changed_cd(void * s, lv_msg_t * m) {
     zoom_factor = *(uint16_t *) lv_msg_get_payload(m);
     dsp_set_spectrum_factor(zoom_factor);
     spectrum_clear();
-    main_line_dsc.width = zoom_factor / 2 + 2
+    main_line_dsc.width = zoom_factor / 2 + 2;
 }
