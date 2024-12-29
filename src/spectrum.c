@@ -43,8 +43,6 @@ static int16_t          delta_surplus = 0;
 
 static bool             spectrum_tx = false;
 
-static lv_draw_line_dsc_t  main_center_line_dsc;
-
 typedef struct {
     float       val;
     uint64_t    time;
@@ -61,6 +59,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
     lv_draw_ctx_t       *draw_ctx = lv_event_get_draw_ctx(e);
     lv_draw_line_dsc_t  main_line_dsc;
     lv_draw_line_dsc_t  peak_line_dsc;
+    lv_draw_line_dsc_t  main_center_line_dsc;
 
     if (!spectrum_buf) {
         return;
@@ -132,6 +131,8 @@ static void spectrum_draw_cb(lv_event_t * e) {
             main_b.y = y1 + h;
         }
 
+        main_line_dsc.color = lv_color_hex(0x3D85C6);
+        main_line_dsc.opa = LV_OPA_50;
         lv_draw_line(draw_ctx, &main_line_dsc, &main_a, &main_b);
 
         if (!params.spectrum_filled) {

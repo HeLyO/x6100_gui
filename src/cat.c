@@ -540,8 +540,7 @@ static void frame_parse(uint16_t len) {
                     send_frame(9);
                 } else {
                     uint64_t raw_pwr_lvl = bcdToDecimal(&frame[6], 4);
-                    //msg_update_text_fmt("#FFFFFF PWR: %llu | %.1f", pwr_lvl, (float)(pwr_lvl) * 10 / 255);
-                    int64_t pwr_lvl = ceil((float)(raw_pwr_lvl) * 10 / 255 / 0.1) - params.pwr / 0.1;
+                    int64_t pwr_lvl = ceil((float)(raw_pwr_lvl) * 10 / 255 / 0.1) - params.pwr / 0.1f;
                     msg_update_text_fmt("#FFFFFF PWR: %" PRId64 " | %.1f", pwr_lvl, radio_change_pwr(0));
                     float x = radio_change_pwr((int16_t)(pwr_lvl));
                     frame[4] = CODE_OK;
