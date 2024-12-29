@@ -43,6 +43,8 @@ static int16_t          delta_surplus = 0;
 
 static bool             spectrum_tx = false;
 
+static lv_draw_line_dsc_t  main_center_line_dsc;
+
 typedef struct {
     float       val;
     uint64_t    time;
@@ -210,9 +212,9 @@ static void spectrum_draw_cb(lv_event_t * e) {
 
     /* Center */
 
-    main_line_dsc.color = lv_color_hex(0xFF0000);
-    main_line_dsc.width = 1;
-    main_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
+    main_center_line_dsc.color = lv_color_hex(0xFF0000);
+    main_center_line_dsc.width = 1;
+    main_center_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
 
     main_a.x = x1 + w / 2;
     main_a.y = y1 + h - visor_height;
@@ -221,13 +223,13 @@ static void spectrum_draw_cb(lv_event_t * e) {
 
     x6100_mode_t cur_mode = params_band_cur_mode_get();
     if (recorder_is_on()) {
-        main_line_dsc.color = lv_color_hex(0xFF0000);
+        main_center_line_dsc.color = lv_color_hex(0xFF0000);
     } else if (cur_mode == x6100_mode_cw || cur_mode == x6100_mode_cwr) {
         // Hide LO line on CW
-        main_line_dsc.opa = LV_OPA_0;
+        main_center_line_dsc.opa = LV_OPA_0;
     }
 
-    lv_draw_line(draw_ctx, &main_line_dsc, &main_a, &main_b);
+    lv_draw_line(draw_ctx, &main_center_line_dsc, &main_a, &main_b);
 }
 
 static void tx_cb(lv_event_t * e) {
@@ -397,5 +399,5 @@ static void zoom_changed_cd(void * s, lv_msg_t * m) {
     zoom_factor = *(uint16_t *) lv_msg_get_payload(m);
     dsp_set_spectrum_factor(zoom_factor);
     spectrum_clear();
-    main_line_dsc.width = zoom_factor / 2 + 2;
+    main_center_line_dsc.width = zoom_factor / 2 + 2;
 }
