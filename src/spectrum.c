@@ -211,8 +211,8 @@ static void spectrum_draw_cb(lv_event_t * e) {
     /* Center */
 
     main_line_dsc.color = lv_color_hex(0xFF0000);
-    main_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
     main_line_dsc.width = 1;
+    main_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
 
     main_a.x = x1 + w / 2;
     main_a.y = y1 + h - visor_height;
@@ -397,4 +397,5 @@ static void zoom_changed_cd(void * s, lv_msg_t * m) {
     zoom_factor = *(uint16_t *) lv_msg_get_payload(m);
     dsp_set_spectrum_factor(zoom_factor);
     spectrum_clear();
+    main_line_dsc.width = zoom_factor / 2 + 2
 }
