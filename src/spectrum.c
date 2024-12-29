@@ -131,8 +131,6 @@ static void spectrum_draw_cb(lv_event_t * e) {
             main_b.y = y1 + h;
         }
 
-        main_line_dsc.color = lv_color_hex(0x3D85C6);
-        main_line_dsc.opa = LV_OPA_50;
         lv_draw_line(draw_ctx, &main_line_dsc, &main_a, &main_b);
 
         if (!params.spectrum_filled) {
@@ -215,7 +213,7 @@ static void spectrum_draw_cb(lv_event_t * e) {
 
     lv_draw_line_dsc_init(&main_center_line_dsc);
     main_center_line_dsc.color = lv_color_hex(0xFF0000);
-    main_center_line_dsc.width = 1;
+    main_center_line_dsc.width = 1 + zoom_factor / 2;
     main_center_line_dsc.opa = LV_OPA_COVER;
     main_center_line_dsc.blend_mode = LV_BLEND_MODE_NORMAL;
 
